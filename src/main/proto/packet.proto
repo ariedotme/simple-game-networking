@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package mmorpg;
+
+// TODO( Change packets to send only deltas instead of worldstate )
+
+enum PacketType {
+  HANDSHAKE = 0;
+  CHAT_MESSAGE = 1;
+  PLAYER_MOVE = 2;
+  WORLD_STATE = 3;
+}
+
+message Packet {
+  PacketType type = 1;
+  bytes data = 2;
+}
+
+message Handshake {
+  string playerName = 1;
+  string version = 2;
+}
+
+message ChatMessage {
+  string senderId = 1;
+  string content = 2;
+  int64 timestamp = 3;
+}
+
+message PlayerMove {
+  string playerId = 1;
+  float x = 2;
+  float y = 3;
+  float z = 4;
+}
+
+message WorldState {
+  repeated PlayerMove players = 1;
+}
