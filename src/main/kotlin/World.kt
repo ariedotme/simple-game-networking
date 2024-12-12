@@ -8,7 +8,14 @@ data class Player(
     var y: Float = 0f,
     var z: Float = 0f,
     val session: DefaultWebSocketServerSession
-)
+) {
+    fun isWithinRange(other: Player, range: Float): Boolean {
+        val dx = x - other.x
+        val dy = y - other.y
+        val dz = z - other.z
+        return dx * dx + dy * dy + dz * dz <= range * range
+    }
+}
 
 class World {
     private val players = mutableMapOf<String, Player>()
@@ -25,13 +32,14 @@ class World {
         println("Player removed: $id")
     }
 
-    fun updatePlayerPosition(id: String, x: Float, y: Float, z: Float) {
-        players[id]?.let {
-            it.x = x
-            it.y = y
-            it.z = z
-            println("Player $id moved to ($x, $y, $z)")
-        }
+    fun updatePlayerPosition(id: String, x: Float, y: Float, z: Float): List<Player> {
+        val player = players[id] ?: return emptyList()
+        player.x = x
+        player.y = y
+        player.z = z
+        println("Player $id moved to ($x, $y, $z)")
+
+        return players.values.filter { it.id != id && player.isWithinRange(it, 10f) }
     }
 
     fun getPlayers(): List<Player> = players.values.toList()
